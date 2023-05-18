@@ -196,18 +196,44 @@ int OOPSQLite3Statement::execDML(){
     return nret;
 }
 
+OOPSQLite3Query OOPSQLite3Statement::execQuery(){
+    checkDB();
+    checkVM();
+
+    int nret = 0;
+    do{
+        nret = sqlite3_step(mp_vm);
+    }while(nret == SQLITE_SCHEMA);
+    
+    if (nret != SQLITE_OK && nret != SQLITE_DONE && nret != SQLITE_ROW){
+        std::cout << "OOPSQLite3Statement::execQuery() - Error executing SQL statement" << std::endl;
+        return OOPSQLite3Query(mp_db, mp_vm, true/*eof*/);
+    }
+    return OOPSQLite3Query(mp_db, mp_vm, false/*eof*/);
+}
+
 /*************************bind function for multiple types*********************/
 //TODO： optimize bind function, use template
 
 // template<typename T>
-// void OOPSQLite3Statement::bind(int nparam, const T& nvalue){
-//     auto typename = typeid(nvalues).name();
-//     std::unorderd_map<std::string std::function<int()> > func_dict;
-//     func_dict["i"] = sqlite3_bind_int;
-//     func_dict["d"] = sqlite3_bind_double;
-//     func_dict["s"] = sqlite3_bind_text;
-//     func_dict["b"] = sqlite3_bind_blob;
-
+// void OOPSQLite3Statement<T>::bind(int nparam, const T& nvalue){
+//     switch(typeid(nvalue)){
+//         case typeid(int):
+//             sqlite3_bind_int(mp_vm, nparam, nvalue);
+//             break;
+//         case typeid(double):
+//             sqlite3_bind_double(mp_vm, nparam, nvalue);
+//             break;
+//         case typeid(std::string):
+//             sqlite3_bind_text(mp_vm, nparam, nvalue.c_str(), nvalue.size(), SQLITE_TRANSIENT);
+//             break;
+//         case typeid(const unsigned char *):
+//             sqlite3_bind_blob(mp_vm, nparam, nvalue, nvalue.size(), SQLITE_TRANSIENT);
+//             break;
+//         default:
+//             std::cout << "OOPSQLite3Statement::bind() - Unsupported type: " << typename << std::endl;
+//             break;   
+//     }
 // }
 
 void OOPSQLite3Statement::bind(int nparam, const std::string nvalue){

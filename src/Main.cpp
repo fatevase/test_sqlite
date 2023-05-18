@@ -24,8 +24,11 @@ void testOOPSQLite(void callFun(std::string id, std::string name, std::string ag
   int ret = 0;
   OOPSQLite3DB db;
   db.open("mydataset.sqlite3");
-  const std::string sql = "select * from mytable";
-  OOPSQLite3Query q = db.execQuery(sql);
+  const std::string sql = "select * from mytable where id < (?)";
+  OOPSQLite3Statement vm = db.compileStatement(sql);
+  vm.bind(1, 3);
+
+  OOPSQLite3Query q = vm.execQuery();
 	std::string id, name, age;
   while (!q.eof()){  
     id = q.fieldValue(0);
@@ -38,12 +41,11 @@ void testOOPSQLite(void callFun(std::string id, std::string name, std::string ag
 }
 
 int main(){
-  // testOOPSQLite(showFunction);
-  const unsigned char *sql = "select * from mytable";
-  std::cout << typeid(sql).name() << std::endl;
-
+  testOOPSQLite(showFunction);
   return 0;
+
 }
+
 
 // int main() {
 //   // Create a CppSQLite3U database object.

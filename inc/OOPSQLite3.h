@@ -61,6 +61,9 @@ public:
 
 	OOPSQLite3Query execQuery();
 
+	// template<typename T>
+	// void bind(int nparam, const T& nvalue);
+
 	void bind(int nparam, std::string nvalue);
 	void bind(int nparam, const int nvalue);
 	void bind(int nparam, const double nvalue);
