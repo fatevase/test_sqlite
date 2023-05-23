@@ -1,0 +1,55 @@
+{
+    "tasks": [{
+        "type": "cppbuild",
+        "label": "C++ Build (Linux)",
+        "command": "/usr/bin/g++",
+        "args": [
+            "-fdiagnostics-color=always",
+            "-std=c++11",
+            "-g",
+            "${file}",
+            "-o",
+            "${fileDirname}/.cppcache/${fileBasenameNoExtension}",
+            "`pkg-config","--libs","--cflags","opencv4`"
+            ,"-lsqlite3"
+            // "`pkg-config", "opencv4","--libs","--cflags","opencv4`",
+        ],
+        "group": {
+            "kind": "build",
+            "isDefault": true
+        },
+        "options": {
+            "cwd": "${fileDirname}"
+        },
+        "problemMatcher": [
+            "$gcc"
+        ],
+        "detail": "调试器生成的任务。"
+    },
+    {
+      "label": "C++ Build (Windows)",
+      "type": "shell",
+      "command": "msbuild",
+      "args": [
+        "/t:Build",
+        "/p:Configuration=Release",
+        "/p:Platform=Win32",
+        "MyProject.sln"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "silent",
+        "panel": "shared"
+      },
+      "problemMatcher": "$msCompile",
+      "windows": {
+        "command": "nmake",
+        "args": []
+      }
+    }
+    ],
+    "version": "2.0.0"
+}

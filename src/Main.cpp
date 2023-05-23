@@ -2,6 +2,14 @@
 #include <fstream>
 #include <sqlite3.h>
 #include <OOPSQLite3.h>
+#include <CommSQL.h>
+
+#define SQLITE_DATA_PATH "db.sqlite3"
+#define TABLE_NAME "client_deviceinfo"
+struct EnvParaStruct {
+  std::string path;
+  int typeNum;
+};
 
 static int callback(void *NotUsed, int argc, char **argv, char **azColName){
     int i;
@@ -39,9 +47,33 @@ void testOOPSQLite(void callFun(std::string id, std::string name, std::string ag
   }
   q.finalize(); db.close();
 }
+static int callback1(void *NotUsed, int argc, char **argv, char **azColName){
+    int i;
+    for(i=0; i<argc; i++){
+    printf("%s = %s\n", azColName[i], argv[i] ? argv[i] : "NULL");
+    }
+    printf("\n");
+    return 0;
+}
+
+void handleTypeNum(int& typeNum){
+  std::cout << "handle function :typeNum: " << typeNum << std::endl;
+}
+
+void testReadSingleData() {
+  sqlite3* db = CommSQL::openDatabase(SQLITE_DATA_PATH);
+  std::string sql = CommSQL::generateSelectQuery(TABLE_NAME, "value", "key='ai_type_num'");
+  int intValue = 0;
+  std::string stringValue;
+  std::cout << sql << std::endl;
+  CommSQL::readSingleData(db, sql, intValue);
+  std::cout << "intValue: " << intValue << std::endl;
+}
 
 int main(){
-  testOOPSQLite(showFunction);
+  // testOOPSQLite(showFunction);
+  testReadSingleData();
+
   return 0;
 
 }
