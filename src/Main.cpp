@@ -63,11 +63,24 @@ void handleTypeNum(int& typeNum){
 void testReadSingleData() {
   sqlite3* db = CommSQL::openDatabase(SQLITE_DATA_PATH);
   std::string sql = CommSQL::generateSelectQuery(TABLE_NAME, "value", "key='ai_type_num'");
-  int intValue = 0;
-  std::string stringValue;
+  // int intValue = 0;
+  float get_value;
+  // char get_value[100];
   std::cout << sql << std::endl;
-  CommSQL::readSingleData(db, sql, intValue);
-  std::cout << "intValue: " << intValue << std::endl;
+  CommSQL::readSingleData(db, sql, get_value);
+  std::cout << "get value: " << get_value << std::endl;
+}
+
+template<typename T>
+void settingEnvPara(
+  sqlite3* db, 
+  std::string key,
+  T& result, std::string cast_type="TEXT"){
+  std::string column_name = "CAST (value AS " + cast_type + ")";
+
+  std::string sql = CommSQL::generateSelectQuery(TABLE_NAME, column_name, "key='" + key + "'");
+  std::cout << sql << std::endl;
+  CommSQL::readSingleData(db, sql, result);
 }
 
 int main(){
