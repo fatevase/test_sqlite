@@ -37,7 +37,10 @@ public:
     template<typename U>
     static U get_column_value(sqlite3_stmt* stmt, int i);
     
-
+    template<typename T>
+    static void setParams(sqlite3* db, 
+        std::string key,
+        T& result, std::string cast_type="TEXT", int new_len=10);
 
 
     // template <typename T>

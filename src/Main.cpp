@@ -11,81 +11,89 @@ struct EnvParaStruct {
   int typeNum;
 };
 
-static int callback(void *NotUsed, int argc, char **argv, char **azColName){
-    int i;
-    for(i=0; i<argc; i++){
-    printf("%s = %s\n", azColName[i], argv[i] ? argv[i] : "NULL");
-    }
-    printf("\n");
-    return 0;
-}
-bool isFileExists(const char* file_name){
-    std::ifstream f(file_name);
-    return f.good();
-}
 
-void showFunction(std::string id, std::string name, std::string age){
-  std::cout << "id: " << id << ", name: " << name << ", age: " << age << std::endl;
-}
 
-void testOOPSQLite(void callFun(std::string id, std::string name, std::string age)){
-  int ret = 0;
-  OOPSQLite3DB db;
-  db.open("mydataset.sqlite3");
-  const std::string sql = "select * from mytable where id < (?)";
-  OOPSQLite3Statement vm = db.compileStatement(sql);
-  vm.bind(1, 3);
-
-  OOPSQLite3Query q = vm.execQuery();
-	std::string id, name, age;
-  while (!q.eof()){  
-    id = q.fieldValue(0);
-    name = q.fieldValue(1);
-    age = q.fieldValue(2);
-    callFun(id, name, age);
-    q.nextRow();   
+class TestSQLite{
+public:
+  static int callback(void *NotUsed, int argc, char **argv, char **azColName){
+      int i;
+      for(i=0; i<argc; i++){
+      printf("%s = %s\n", azColName[i], argv[i] ? argv[i] : "NULL");
+      }
+      printf("\n");
+      return 0;
   }
-  q.finalize(); db.close();
-}
-static int callback1(void *NotUsed, int argc, char **argv, char **azColName){
-    int i;
-    for(i=0; i<argc; i++){
-    printf("%s = %s\n", azColName[i], argv[i] ? argv[i] : "NULL");
+  bool isFileExists(const char* file_name){
+      std::ifstream f(file_name);
+      return f.good();
+  }
+
+  void showFunction(std::string id, std::string name, std::string age){
+    std::cout << "id: " << id << ", name: " << name << ", age: " << age << std::endl;
+  }
+
+  void testOOPSQLite(void callFun(std::string id, std::string name, std::string age)){
+    int ret = 0;
+    OOPSQLite3DB db;
+    db.open("mydataset.sqlite3");
+    const std::string sql = "select * from mytable where id < (?)";
+    OOPSQLite3Statement vm = db.compileStatement(sql);
+    vm.bind(1, 3);
+
+    OOPSQLite3Query q = vm.execQuery();
+    std::string id, name, age;
+    while (!q.eof()){  
+      id = q.fieldValue(0);
+      name = q.fieldValue(1);
+      age = q.fieldValue(2);
+      callFun(id, name, age);
+      q.nextRow();   
     }
-    printf("\n");
-    return 0;
-}
+    q.finalize(); db.close();
+  }
+  static int callback1(void *NotUsed, int argc, char **argv, char **azColName){
+      int i;
+      for(i=0; i<argc; i++){
+      printf("%s = %s\n", azColName[i], argv[i] ? argv[i] : "NULL");
+      }
+      printf("\n");
+      return 0;
+  }
 
-void handleTypeNum(int& typeNum){
-  std::cout << "handle function :typeNum: " << typeNum << std::endl;
-}
+  void handleTypeNum(int& typeNum){
+    std::cout << "handle function :typeNum: " << typeNum << std::endl;
+  }
 
-void testReadSingleData() {
-  sqlite3* db = CommSQL::openDatabase(SQLITE_DATA_PATH);
-  std::string sql = CommSQL::generateSelectQuery(TABLE_NAME, "value", "key='ai_type_num'");
-  // int intValue = 0;
-  float get_value;
-  // char get_value[100];
-  std::cout << sql << std::endl;
-  CommSQL::readSingleData(db, sql, get_value);
-  std::cout << "get value: " << get_value << std::endl;
-}
+  void testReadSingleData() {
+    sqlite3* db = CommSQL::openDatabase(SQLITE_DATA_PATH);
+    std::string sql = CommSQL::generateSelectQuery(TABLE_NAME, "value", "key='ai_type_num'");
+    // int intValue = 0;
+    float get_value;
+    // char get_value[100];
+    std::cout << sql << std::endl;
+    CommSQL::readSingleData(db, sql, get_value);
+    std::cout << "get value: " << get_value << std::endl;
+  }
 
-template<typename T>
-void settingEnvPara(
-  sqlite3* db, 
-  std::string key,
-  T& result, std::string cast_type="TEXT"){
-  std::string column_name = "CAST (value AS " + cast_type + ")";
+  template<typename T>
+  void settingEnvPara(
+    sqlite3* db, 
+    std::string key,
+    T& result, std::string cast_type="TEXT"){
+    std::string column_name = "CAST (value AS " + cast_type + ")";
 
-  std::string sql = CommSQL::generateSelectQuery(TABLE_NAME, column_name, "key='" + key + "'");
-  std::cout << sql << std::endl;
-  CommSQL::readSingleData(db, sql, result);
-}
+    std::string sql = CommSQL::generateSelectQuery(TABLE_NAME, column_name, "key='" + key + "'");
+    std::cout << sql << std::endl;
+    CommSQL::readSingleData(db, sql, result);
+  }
+
+};
+
 
 int main(){
   // testOOPSQLite(showFunction);
-  testReadSingleData();
+  TestSQLite tsql;
+  tsql.testReadSingleData();
 
   return 0;
 

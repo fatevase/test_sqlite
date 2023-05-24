@@ -96,6 +96,100 @@ std::string CommSQL::generateSelectQuery(
 
 
 
+/************/
+inline void stringSplit(std::string& str, std::string split, std::vector<std::string>& res, void (*handle)(const std::string&) = nullptr) {
+    char* cstr = new char[str.length() + 1];
+    std::strcpy(cstr, str.c_str());
+
+    char* token = std::strtok(cstr, split.c_str());
+    while (token != nullptr) {
+        std::string value(token);
+        if (handle != nullptr) handle(value);
+        res.emplace_back(value);
+        token = std::strtok(nullptr, split.c_str());
+    }
+    delete[] cstr;
+}
+
+
+template<typename T>
+void CommSQL::setParams(
+  sqlite3* db, 
+  std::string key,
+  T& result, std::string cast_type, int new_len){
+    std::string column_name = "value";
+
+    if ("INTEGER" == cast_type || "REAL" == cast_type){
+        column_name = "CAST(value AS " + cast_type + ")";
+    }
+    std::string sql = CommSQL::generateSelectQuery(CONFIG_TABLE, column_name, "`key`='" + key + "'");
+    std::cout << sql << std::endl;
+    CommSQL::readSingleData(db, sql, result);
+
+}
+
+
+template<>
+void CommSQL::setParams<float *>(
+  sqlite3* db, 
+  std::string key,
+  float* &result, std::string cast_type, int new_len){
+    std::string column_name = "value";
+
+    std::string sql = CommSQL::generateSelectQuery(CONFIG_TABLE, column_name, "`key`='" + key + "'");
+    std::cout << sql << std::endl;
+    result = new float[new_len];
+    std::string tmp_str = "";
+    std::vector<std::string> str_list;
+    CommSQL::readSingleData(db, sql, tmp_str);
+    stringSplit(tmp_str, " ", str_list);	// 将子串存放到strList中
+    for (std::size_t i = 0; i < str_list.size(); ++i) {
+        result[i] = (float)atof(str_list[i].c_str());
+    }
+    str_list.clear();
+  }
+template<>
+void CommSQL::setParams<int *>(
+  sqlite3* db, 
+  std::string key,
+  int* &result, std::string cast_type, int new_len){
+        std::string column_name = "value";
+
+    std::string sql = CommSQL::generateSelectQuery(CONFIG_TABLE, column_name, "`key`='" + key + "'");
+    std::cout << sql << std::endl;
+        result = new int[new_len];
+        std::string tmp_str = "";
+        std::vector<std::string> str_list;
+        CommSQL::readSingleData(db, sql, tmp_str);
+        stringSplit(tmp_str, " ", str_list);	// 将子串存放到strList中
+        for (std::size_t i = 0; i < str_list.size(); ++i) {
+            result[i] = (float)atoi(str_list[i].c_str());
+        }
+        str_list.clear();
+  }
+
+template<>
+void CommSQL::setParams<char **>(
+  sqlite3* db, 
+  std::string key,
+  char** &result, std::string cast_type, int new_len){
+        std::string column_name = "value";
+
+    std::string sql = CommSQL::generateSelectQuery(CONFIG_TABLE, column_name, "`key`='" + key + "'");
+    std::cout << sql << std::endl;
+    result = new char* [new_len];
+    
+    std::string tmp_str = "";
+    std::vector<std::string> str_list;
+    CommSQL::readSingleData(db, sql, tmp_str);
+    stringSplit(tmp_str, ";", str_list);	// 将子串存放到strList中
+    for (std::size_t i = 0; i < str_list.size(); ++i) {
+        result[i] = strdup(str_list[i].c_str());
+    }
+    str_list.clear();
+  }
+
+
 
 
 // template<>
