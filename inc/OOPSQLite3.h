@@ -1,6 +1,5 @@
 #include <iostream>
 #include <sqlite3.h>
-#include <unordered_map>
 
 #define SQL_MAXSIZE    2048
 
