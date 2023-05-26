@@ -44,7 +44,7 @@ std::string Utils::escapeJsonString(const std::string& input) {
         switch (*iter) {
             case '\\': ss << "\\\\"; break;
             case '"': ss << "\\\""; break;
-            case '/': ss << "\\/"; break;
+            // case '/': ss << "\\/"; break;
             case '\b': ss << "\\b"; break;
             case '\f': ss << "\\f"; break;
             case '\n': ss << "\\n"; break;
@@ -101,6 +101,12 @@ std::unordered_map<size_t, std::string(*)(const std::any&)> Utils::handlers_m2j 
     } },
     { typeid(char).hash_code(), [](const std::any& value) -> std::string {
         return "\"" + std::string(1, std::any_cast<char>(value)) + "\"";
+    } },
+    { typeid(std::unordered_map<std::string, std::any>).hash_code(), [](const std::any& value) -> std::string {
+        return mapToJson(std::any_cast<std::unordered_map<std::string, std::any>>(value));
+    } },
+    { typeid(std::vector<std::any>).hash_code(), [](const std::any& value) -> std::string {
+        return vectorToJson(std::any_cast<std::vector<std::any>>(value));
     } }
     // Add more handlers for other types...
 };
@@ -120,6 +126,20 @@ std::optional<std::string> Utils::convertAnyToJson(const std::any& value) {
 // for c++17
 /****
  * 将map转换为json字符串，其中key为string，value为基本类型(int, double, float, bool, string)
+ * example:
+ *  
+ * std::unordered_map<std::string, std::any> any_map;
+    std::vector<std::any> v_any;
+    v_any.push_back("value1");
+    v_any.push_back(std::vector<std::any >{"value2", "value3"});
+    any_map["key1"] = "value1";
+    any_map["key2"] = 2;
+    any_map["key3"] = 3.14;
+    any_map["key4"] = true;
+    any_map["key6"] = 'c';
+    any_map["key7"] = v_any;
+  
+    std::string json_any_map = Utils::mapToJson(any_map);
 */
 std::string Utils::mapToJson(const std::unordered_map<std::string, std::any>& map) {
     std::stringstream json;

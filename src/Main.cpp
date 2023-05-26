@@ -103,19 +103,17 @@ public:
     std::string current_time = Utils::getCurrentDateString();
     std::cout << "current_time: " << current_time << std::endl;
 
-    std::unordered_map<std::string, std::string > umap;
-    umap["key1"] = "value1";
-    umap["key2"] = "value2";
-    std::string json_map = Utils::mapToJson(umap);
-    std::cout << "json_map: " << json_map << std::endl;
-
     std::unordered_map<std::string, std::any> any_map;
+    std::vector<std::any> v_any;
+    v_any.push_back("value1");
+    v_any.push_back(std::vector<std::any >{"value2", "value3"});
     any_map["key1"] = "value1";
     any_map["key2"] = 2;
     any_map["key3"] = 3.14;
     any_map["key4"] = true;
-    any_map["key5"] = "123";
     any_map["key6"] = 'c';
+    any_map["key7"] = v_any;
+  
     std::string json_any_map = Utils::mapToJson(any_map);
     std::cout << "json_any_map: " << json_any_map << std::endl;
 
