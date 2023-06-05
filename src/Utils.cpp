@@ -197,3 +197,20 @@ std::string Utils::floatToString(const std::any& value, int precision){
     }
     return ss.str();
 }; //only for float or double
+
+
+
+
+void Utils::consoleLog(LogLevel level, const std::string& message) {
+    switch(level) {
+        case LogLevel::INFO:
+            std::cout << "\033[1;32m" << "[INFO] " << message << "\033[0m" << std::endl;
+            break;
+        case LogLevel::WARNING:
+            std::cout << "\033[1;33m" << "[WARNING] " << message << "\033[0m" << std::endl;
+            break;
+        case LogLevel::ERROR:
+            std::cout << "\033[1;31m" << "[ERROR] " << message << "\033[0m" << std::endl;
+            break;
+    }
+}
